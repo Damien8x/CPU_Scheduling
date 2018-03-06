@@ -113,6 +113,7 @@ void roundRobin(Process p[], int  n)
 int roundRobinPosition = 0;
 int totalWaitTime = 0;
 int totalTurnaroundTime = 0;
+string processOrder = "Process Order: ";
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
@@ -129,6 +130,7 @@ while(roundRobinPosition < n-1){
 		if(p[i].getRBT() !=0){
 			computationTime++;
 			p[i].modRBT(1);
+			processOrder += to_string(p[i].getJID()) + ", ";
 		
 			if(p[i].getRBT() == 0){
 				p[i].setTerminationTime(computationTime);
@@ -155,6 +157,7 @@ cout << "avg wait time: \t\t" << avgWaitTime << endl;
 cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
 cout << "overall Throughput: \t" << overallThroughput << endl;
 cout << "computation Time: \t" << computationTime << endl;
+cout << processOrder << endl;
 }
 void heapifySJF(Process p[], int n, int i, int computationTime)
 {
@@ -193,6 +196,7 @@ for(int i = n-1; i>=0; i--){
 
 void SJF(Process p[], int n)
 {
+string processOrder = "process order: ";
 double compTime = 0;
 int computationTime = 0;
 int SJFPosition = 0;
@@ -212,6 +216,7 @@ while(SJFPosition < n -1){
 		p[0].modRBT(1);
 
 	}
+processOrder += to_string(p[0].getJID()) + ", ";
 p[0].setTerminationTime(computationTime);
 p[0].calcTT();
 p[0].calcWT();
@@ -235,4 +240,5 @@ cout << "avg wait time: \t\t" << avgWaitTime << endl;
 cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
 cout << "overall Throughput: \t" << overallThroughput << endl;
 cout << "computation Time: \t" << computationTime << endl;
+cout << processOrder << endl;
 }
