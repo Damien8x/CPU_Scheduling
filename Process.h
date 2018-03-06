@@ -22,7 +22,7 @@ public:
 Process();				//default constructor
 Process(int jobID, int burstTime, int arrivalTime);		//takes in 3 arguments found in "jobs.txt"
 
-bool modRBT(int pT);			//returns true if rBT is greater than zero (requires furhter processing)
+void modRBT(int pT);			//returns true if rBT is greater than zero (requires furhter processing)
 
 void setTerminationTime(int time);	//sets termination time to passed argument
 
@@ -43,5 +43,7 @@ int getTerminationTime();		//returns termination time
 void calcWT();				//calculates wait time for process
 
 void calcTT();				//calculates turnaround time for process
+
+void resetRBT();			//sets remaining burst time back to original value
 
 };

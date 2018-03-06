@@ -7,12 +7,15 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <queue>
 
 using namespace std;
 
 void welcomeMessage();
-void heapify(Process p[], int n, int i);
-void heapsort(Process p[], int n);
+void heapifyATJID(Process p[], int n, int i);
+void heapsortATJID(Process p[], int n);
+void roundRobin(Process p[], int n);
+
 
 int main()
 {
@@ -51,25 +54,12 @@ while (getline(inFile, line)){
 	int aT = stoi(arrivalTime);
 	Process add(jID, bT, aT);
 	p[fileCount -1] = add;
-	
-	
+
 }
 
 inFile.close();
 
-
-for(int i = 0; i <processCount ; i++){
-	cout << p[i].getAT() << endl;
-}
-
-heapsort(p, processCount);
-
-cout << "************************************************************" << endl;
-
-for(int i = 0; i <processCount ; i++){
-	cout << p[i].getAT() << "	";
-	cout << p[i].getJID() << endl;
-}
+roundRobin(p, processCount);
 
 return 0;
 }
@@ -80,7 +70,7 @@ void welcomeMessage()
 cout << "please enter name process file " << endl;
 }
 
-void heapify(Process p[], int n, int i)
+void heapifyATJID(Process p[], int n, int i)
 {
 int largest = i;
 int l = 2*i + 1;
@@ -99,18 +89,69 @@ if(largest != i){
 	Process temp = p[largest];
 	p[largest] = p[i];
 	p[i] = temp;
-	heapify(p, n, largest);
+	heapifyATJID(p, n, largest);
 }
 }
 
-void heapsort(Process p[], int n)
+void heapsortATJID(Process p[], int n)
 {
 for(int i = n/2 - 1; i >= 0; i --)
-	heapify(p, n, i);
+	heapifyATJID(p, n, i);
 for(int i = n-1; i>=0; i--){
 	Process temp = p[0];
 	p[0] = p[i];
 	p[i] = temp;
-	heapify(p, i, 0);
+	heapifyATJID(p, i, 0);
 }	
+}
+
+void roundRobin(Process p[], int  n)
+{
+int roundRobinPosition = 0;
+int totalWaitTime = 0;
+int totalTurnaroundTime = 0;
+double avgWaitTime = 0;
+double avgTurnaroundTime = 0;
+double overallThroughput = 0;
+double computationTime = 0;
+Process roundRobinOrder[n];
+
+heapsortATJID(p, n);
+
+for(int i = 0; i < n; i++)
+	p[i].resetRBT();
+while(roundRobinPosition < n-1){
+
+	for(int i = 0; i < n; i++){
+		if(p[i].getRBT() !=0){
+			computationTime++;
+			p[i].modRBT(1);
+		
+			if(p[i].getRBT() == 0){
+				p[i].setTerminationTime(computationTime);
+				p[i].calcTT();
+				p[i].calcWT();
+				roundRobinOrder[roundRobinPosition] = p[i];
+				roundRobinPosition++;
+			}
+		}
+	}
+}
+
+for(int i = 0; i < n; i++){
+	totalWaitTime += roundRobinOrder[i].getWT();
+	totalTurnaroundTime += roundRobinOrder[i].getTT();
+}
+
+avgWaitTime = totalWaitTime/n;
+avgTurnaroundTime = totalTurnaroundTime/n;
+overallThroughput = n/computationTime;
+
+cout << "ROUND ROBIN" << endl << endl;
+cout << "avg wait time: \t\t" << avgWaitTime << endl;
+cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
+cout << "overall Throughput: \t" << overallThroughput << endl;
+cout << "computation Time: \t" << computationTime << endl;
+
+
 }

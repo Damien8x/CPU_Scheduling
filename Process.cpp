@@ -40,14 +40,11 @@ rBT = bT;
 terminationTime = 0;
 }
 
-bool Process::modRBT(int pT)
+void Process::modRBT(int pT)
 {
 rBT = rBT - pT;
-	if(rBT > 0)
-		return true;
-	else
-		return false;
 }
+
 void Process::setTerminationTime(int time)
 {
 	terminationTime = time;
@@ -97,4 +94,7 @@ void Process::calcTT()
 	tT = terminationTime - aT;
 }
 
-
+void Process::resetRBT()
+{
+	rBT = bT;
+}
