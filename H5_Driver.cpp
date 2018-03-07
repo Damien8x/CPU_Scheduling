@@ -258,44 +258,43 @@ void SRTF(Process p[], int n)
 {
 string processOrder = "process order: ";
 double compTime = 0;
-int computationTime =3 ;
+int computationTime = 0;
 int SJFPosition = 0;
 int totalWaitTime = 0;
 int totalTurnaroundTime = 0;
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
-
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
 
 Process SJFOrder[n];
+
 heapsortSJF(p,n,computationTime);
-/*heapsortSJF(p,n,computationTime);
-	for(int i = n -1; i >=0; i--)
-		cout << p[i].getJID() << " " << p[i].getBT() << " " << p[i].getRBT() << " " << p[i].getAT() << endl;
-*/
-processOrder += to_string(p[n-1].getJID());
-/*
-while(SJFPosition < n)
-{
-cout << p[n-1].getJID()<<p[n-1].getRBT();
+while(SJFPosition < n){
 	while(p[n-1].getRBT() !=0){
 		computationTime++;
 		p[n-1].modRBT(1);
-			if(p[n-1].getRBT() == 0){
-				p[n-1].setTerminationTime(computationTime);
-				p[n-1].calcTT();
-				p[n-1].calcWT();
-				SJFOrder[SJFPosition] = p[n-1];
-				SJFPosition++;
-				processOrder += ", " + to_string(p[n-1].getJID());
-
-			}
-			heapsortSJF(p,n,computationTime);		
-				}
+		if(p[n-1].getRBT() == 0){
+			p[n-1].setTerminationTime(computationTime);
+			p[n-1].calcTT();
+			p[n-1].calcWT();
+			SJFOrder[SJFPosition] = p[n-1];
+	}
+		heapsortSJF(p,n,computationTime);
+		
 }
-*/
+processOrder += to_string(p[n-1].getJID()) + ", ";
+SJFPosition =0;
+for(int i=0; i <n; i++){
+	if(p[i].getRBT() == 0){
+		SJFPosition++;
+	}
+}
+
+heapsortSJF(p,n,computationTime);
+}
+
 for(int i=0; i < n; i++){
 	
 	totalWaitTime += p[i].getWT();
@@ -305,11 +304,14 @@ compTime = computationTime;
 avgWaitTime = totalWaitTime/n;
 avgTurnaroundTime = totalTurnaroundTime/n;
 overallThroughput = n/compTime;
+processOrder.resize(processOrder.size()-2);
 
-cout << "SRTF" << endl << endl;
+cout << "SJF" << endl << endl;
 cout << "avg wait time: \t\t" << avgWaitTime << endl;
 cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
 cout << "overall Throughput: \t" << overallThroughput << endl;
 cout << "computation Time: \t" << computationTime << endl;
 cout << processOrder << endl;
 }
+
+
