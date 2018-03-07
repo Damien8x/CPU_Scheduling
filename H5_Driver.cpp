@@ -153,6 +153,7 @@ for(int i = 0; i < n; i++){
 avgWaitTime = totalWaitTime/n;
 avgTurnaroundTime = totalTurnaroundTime/n;
 overallThroughput = n/computationTime;
+processOrder.resize(processOrder.size()-2);
 
 cout << "ROUND ROBIN" << endl << endl;
 cout << "avg wait time: \t\t" << avgWaitTime << endl;
@@ -236,6 +237,7 @@ compTime = computationTime;
 avgWaitTime = totalWaitTime/n;
 avgTurnaroundTime = totalTurnaroundTime/n;
 overallThroughput = n/compTime;
+processOrder.resize(processOrder.size()-2);
 
 cout << "SJF" << endl << endl;
 cout << "avg wait time: \t\t" << avgWaitTime << endl;
