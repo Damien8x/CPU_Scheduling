@@ -18,6 +18,7 @@ void roundRobin(Process p[], int n);
 void SJF(Process p[], int n);
 void heapifySJF(Process p[], int n, int i, int computationTime);
 void heapsortSJF(Process p[], int n, int computationTime);
+void SRTF(Process p[], int n);
 
 int main()
 {
@@ -64,7 +65,8 @@ inFile.close();
 roundRobin(p, processCount);
 cout << "**************************************" << endl;
 SJF(p,processCount);
-
+cout << "++++++++++++++++++++++++++++++++++++++" << endl;
+SRTF(p, processCount);
 
 return 0;
 }
@@ -124,7 +126,7 @@ heapsortATJID(p, n);
 
 for(int i = 0; i < n; i++)
 	p[i].resetRBT();
-while(roundRobinPosition < n-1){
+while(roundRobinPosition < n){
 
 	for(int i = 0; i < n; i++){
 		if(p[i].getRBT() !=0){
@@ -210,7 +212,7 @@ Process SJFOrder[n];
 heapsortSJF(p,n,computationTime);
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
-while(SJFPosition < n -1){
+while(SJFPosition < n){
 	while(p[0].getRBT() !=0){
 		computationTime++;
 		p[0].modRBT(1);
@@ -236,6 +238,62 @@ avgTurnaroundTime = totalTurnaroundTime/n;
 overallThroughput = n/compTime;
 
 cout << "SJF" << endl << endl;
+cout << "avg wait time: \t\t" << avgWaitTime << endl;
+cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
+cout << "overall Throughput: \t" << overallThroughput << endl;
+cout << "computation Time: \t" << computationTime << endl;
+cout << processOrder << endl;
+}
+
+void SRTF(Process p[], int n)
+{
+string processOrder = "process order: ";
+double compTime = 0;
+int computationTime = 0;
+int SJFPosition = 0;
+int totalWaitTime = 0;
+int totalTurnaroundTime = 0;
+double avgWaitTime = 0;
+double avgTurnaroundTime = 0;
+double overallThroughput = 0;
+int tempJobID = 0;
+
+Process SJFOrder[n];
+heapsortSJF(p,n,computationTime);
+processOrder += to_string(p[0].getJID());
+
+
+for(int i = 0; i<n; i++)
+	p[i].resetRBT();
+while(SJFPosition < n){
+	while(p[0].getRBT() !=0){
+		computationTime++;
+		tempJobID = p[0].getJID();
+		p[0].modRBT(1);
+			if(p[0].getRBT() == 0){
+				p[0].setTerminationTime(computationTime);
+				p[0].calcTT();
+				p[0].calcWT();
+				SJFOrder[SJFPosition] = p[0];
+				SJFPosition++;
+			}
+		heapsortSJF(p,n,computationTime);		
+		if(tempJobID != p[0].getJID())
+			processOrder += ", " + to_string(p[0].getJID());
+	}
+}
+
+for(int i=0; i < n; i++){
+	
+	totalWaitTime += p[i].getWT();
+	totalTurnaroundTime += p[i].getTT();
+}
+compTime = computationTime;
+avgWaitTime = totalWaitTime/n;
+avgTurnaroundTime = totalTurnaroundTime/n;
+overallThroughput = n/compTime;
+
+cout << "SRTF" << endl << endl;
 cout << "avg wait time: \t\t" << avgWaitTime << endl;
 cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
 cout << "overall Throughput: \t" << overallThroughput << endl;
