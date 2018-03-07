@@ -168,13 +168,19 @@ int largest = i;
 int l = i * 2 + 1;
 int r = i * 2 + 2;
 
-if(l < n && p[l].getRBT() != 0 && p[l].getAT() <= computationTime && p[l].getRBT() < p[largest].getRBT())
+
+
+if(l < n && p[l].getRBT() > 0 && p[l].getAT() <= computationTime && p[l].getRBT() < p[largest].getRBT() ||
+l < n && p[l].getRBT() > 0 && p[l].getAT() <= computationTime && p[largest].getAT() > computationTime)
 	largest = l;
-if(r < n && p[r].getRBT() != 0 &&  p[r].getAT() <= computationTime && p[r].getRBT() < p[largest].getRBT())
+if(r < n && p[r].getRBT() > 0 && p[r].getAT() <= computationTime && p[r].getRBT() < p[largest].getRBT() ||
+r < n && p[r].getRBT() > 0 && p[r].getAT() <= computationTime && p[largest].getAT() > computationTime) 
 	largest = r;
-if(r < n && p[r].getRBT() == p[largest].getRBT() && p[r].getJID() > p[largest].getJID())
+if(r < n && p[r].getRBT() > 0 && p[r].getAT() <= computationTime && p[r].getRBT() == p[largest].getRBT() && p[r].getJID() < p[largest].getJID() ||
+r < n && p[r].getRBT() > 0 && p[r].getAT() <= computationTime && p[r].getRBT() == p[largest].getRBT() && p[largest].getAT() > computationTime)
 	largest = r;
-if(l < n && p[l].getRBT() == p[largest].getRBT() && p[l].getJID() > p[largest].getJID())
+if (l < n && p[l].getRBT() > 0 && p[l].getAT() <= computationTime && p[l].getRBT() == p[largest].getRBT() && p[l].getJID() < p[largest].getJID() ||
+l < n && p[l].getRBT() > 0 && p[l].getAT() <= computationTime && p[l].getRBT() == p[largest].getRBT() && p[largest].getAT() > computationTime)
 	largest = l;
 if(largest !=i){
 	Process temp = p[largest];
@@ -208,22 +214,23 @@ int totalTurnaroundTime = 0;
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
-
-Process SJFOrder[n];
-heapsortSJF(p,n,computationTime);
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
+
+Process SJFOrder[n];
+
+heapsortSJF(p,n,computationTime);
 while(SJFPosition < n){
-	while(p[0].getRBT() !=0){
+	while(p[n-1].getRBT() !=0){
 		computationTime++;
-		p[0].modRBT(1);
+		p[n-1].modRBT(1);
 
 	}
-processOrder += to_string(p[0].getJID()) + ", ";
-p[0].setTerminationTime(computationTime);
-p[0].calcTT();
-p[0].calcWT();
-SJFOrder[SJFPosition] = p[0];
+processOrder += to_string(p[n-1].getJID()) + ", ";
+p[n-1].setTerminationTime(computationTime);
+p[n-1].calcTT();
+p[n-1].calcWT();
+SJFOrder[SJFPosition] = p[n-1];
 SJFPosition++;
 heapsortSJF(p,n,computationTime);
 }
@@ -251,40 +258,44 @@ void SRTF(Process p[], int n)
 {
 string processOrder = "process order: ";
 double compTime = 0;
-int computationTime = 0;
+int computationTime =3 ;
 int SJFPosition = 0;
 int totalWaitTime = 0;
 int totalTurnaroundTime = 0;
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
-int tempJobID = 0;
-
-Process SJFOrder[n];
-heapsortSJF(p,n,computationTime);
-processOrder += to_string(p[0].getJID());
-
 
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
-while(SJFPosition < n){
-	while(p[0].getRBT() !=0){
-		computationTime++;
-		tempJobID = p[0].getJID();
-		p[0].modRBT(1);
-			if(p[0].getRBT() == 0){
-				p[0].setTerminationTime(computationTime);
-				p[0].calcTT();
-				p[0].calcWT();
-				SJFOrder[SJFPosition] = p[0];
-				SJFPosition++;
-			}
-		heapsortSJF(p,n,computationTime);		
-		if(tempJobID != p[0].getJID())
-			processOrder += ", " + to_string(p[0].getJID());
-	}
-}
 
+Process SJFOrder[n];
+heapsortSJF(p,n,computationTime);
+/*heapsortSJF(p,n,computationTime);
+	for(int i = n -1; i >=0; i--)
+		cout << p[i].getJID() << " " << p[i].getBT() << " " << p[i].getRBT() << " " << p[i].getAT() << endl;
+*/
+processOrder += to_string(p[n-1].getJID());
+/*
+while(SJFPosition < n)
+{
+cout << p[n-1].getJID()<<p[n-1].getRBT();
+	while(p[n-1].getRBT() !=0){
+		computationTime++;
+		p[n-1].modRBT(1);
+			if(p[n-1].getRBT() == 0){
+				p[n-1].setTerminationTime(computationTime);
+				p[n-1].calcTT();
+				p[n-1].calcWT();
+				SJFOrder[SJFPosition] = p[n-1];
+				SJFPosition++;
+				processOrder += ", " + to_string(p[n-1].getJID());
+
+			}
+			heapsortSJF(p,n,computationTime);		
+				}
+}
+*/
 for(int i=0; i < n; i++){
 	
 	totalWaitTime += p[i].getWT();
