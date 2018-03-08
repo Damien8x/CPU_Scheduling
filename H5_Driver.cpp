@@ -35,8 +35,10 @@ getline(cin, readFile);
 
 ifstream jobFile;
 jobFile.open(readFile);
+
 while(getline(jobFile, line))
 	processCount++;
+
 jobFile.close();
 
 Process p[processCount];
@@ -70,6 +72,7 @@ SRTF(p, processCount);
 
 return 0;
 }
+
 void welcomeMessage()
 {
 cout << "please enter name process file " << endl;
@@ -100,8 +103,10 @@ if(largest != i){
 
 void heapsortATJID(Process p[], int n)
 {
+
 for(int i = n/2 - 1; i >= 0; i --)
 	heapifyATJID(p, n, i);
+
 for(int i = n-1; i>=0; i--){
 	Process temp = p[0];
 	p[0] = p[i];
@@ -112,6 +117,7 @@ for(int i = n-1; i>=0; i--){
 
 void roundRobin(Process p[], int  n)
 {
+
 int roundRobinPosition = 0;
 double totalWaitTime = 0;
 double totalTurnaroundTime = 0;
@@ -121,11 +127,11 @@ double avgTurnaroundTime = 0;
 double overallThroughput = 0;
 double computationTime = 0;
 Process roundRobinOrder[n];
-
 heapsortATJID(p, n);
 
 for(int i = 0; i < n; i++)
 	p[i].resetRBT();
+
 while(roundRobinPosition < n){
 
 	for(int i = 0; i < n; i++){
@@ -162,13 +168,13 @@ cout << "overall Throughput: \t" << overallThroughput << endl;
 cout << "computation Time: \t" << computationTime << endl;
 cout << processOrder << endl;
 }
+
 void heapifySJF(Process p[], int n, int i, int computationTime)
 {
+
 int largest = i;
 int l = i * 2 + 1;
 int r = i * 2 + 2;
-
-
 
 if(l < n && p[l].getRBT() > 0 && p[l].getAT() <= computationTime && p[l].getRBT() < p[largest].getRBT() ||
 l < n && p[l].getRBT() > 0 && p[l].getAT() <= computationTime && p[largest].getAT() > computationTime)
@@ -188,6 +194,8 @@ if(largest !=i){
 	p[i] = temp;
 	heapifySJF(p,n,largest,computationTime);  
 
+
+
 }
 }
 void heapsortSJF(Process p[], int n, int computationTime)
@@ -205,6 +213,7 @@ for(int i = n-1; i>=0; i--){
 
 void SJF(Process p[], int n)
 {
+
 string processOrder = "process order: ";
 double compTime = 0;
 int computationTime = 0;
@@ -214,25 +223,29 @@ double totalTurnaroundTime = 0;
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
+
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
 
 Process SJFOrder[n];
-
 heapsortSJF(p,n,computationTime);
+
 while(SJFPosition < n){
 	while(p[n-1].getRBT() !=0){
-		computationTime++;
-		p[n-1].modRBT(1);
-
+		if(p[n-1].getAT() > computationTime)
+			computationTime++;
+		else{
+			computationTime++;
+			p[n-1].modRBT(1);
+		}
 	}
-processOrder += to_string(p[n-1].getJID()) + ", ";
-p[n-1].setTerminationTime(computationTime);
-p[n-1].calcTT();
-p[n-1].calcWT();
-SJFOrder[SJFPosition] = p[n-1];
-SJFPosition++;
-heapsortSJF(p,n,computationTime);
+	processOrder += to_string(p[n-1].getJID()) + ", ";
+	p[n-1].setTerminationTime(computationTime);
+	p[n-1].calcTT();
+	p[n-1].calcWT();
+	SJFOrder[SJFPosition] = p[n-1];
+	SJFPosition++;
+	heapsortSJF(p,n,computationTime);
 }
 
 for(int i=0; i < n; i++){
@@ -240,6 +253,7 @@ for(int i=0; i < n; i++){
 	totalWaitTime += p[i].getWT();
 	totalTurnaroundTime += p[i].getTT();
 }
+
 compTime = computationTime;
 avgWaitTime = totalWaitTime/n;
 avgTurnaroundTime = totalTurnaroundTime/n;
@@ -256,6 +270,7 @@ cout << processOrder << endl;
 
 void SRTF(Process p[], int n)
 {
+
 string processOrder = "process order: ";
 double compTime = 0;
 int computationTime = 0;
@@ -265,52 +280,61 @@ double totalTurnaroundTime = 0;
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
-int tempPosition = 0;
+int tempPosition =n-1 ;
+int check = 0;
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
 
 Process SJFOrder[n];
 
 heapsortSJF(p,n,computationTime);
+
 while(SJFPosition < n){
-	while(p[n-1].getRBT() !=0){
-		if(tempPosition != p[n-1].getJID()){
-		processOrder += to_string(p[n-1].getJID()) + ", ";
-		tempPosition = p[n-1].getJID();
+	
+	for(int i = 0; i < n; i ++)
+	{
+		if(p[i].getRBT() > 0 && p[i].getAT() <= computationTime){
+			if(p[i].getRBT() < p[tempPosition].getRBT() || p[tempPosition].getRBT() == 0)
+				tempPosition = i;
 		}
-		computationTime++;
-		p[n-1].modRBT(1);
-		if(p[n-1].getRBT() == 0){
-			p[n-1].setTerminationTime(computationTime);
-			p[n-1].calcTT();
-			p[n-1].calcWT();
-			SJFOrder[SJFPosition] = p[n-1];
 	}
-		heapsortSJF(p,n,computationTime);
-		
-}
-SJFPosition =0;
-for(int i=0; i <n; i++){
-	if(p[i].getRBT() == 0){
+	
+	for(int i = 0; i < n; i ++)
+	{
+		if(p[i].getRBT() > 0 && p[i].getAT() <= computationTime){
+			if(p[i].getRBT() == p[tempPosition].getRBT() && p[i].getJID() < p[tempPosition].getJID())
+				tempPosition = i;		
+		}
+	}
+	p[tempPosition].modRBT(1);
+	computationTime++;
+	if(check != p[tempPosition].getJID()){
+		processOrder += to_string(p[tempPosition].getJID()) + ", ";
+		check = p[tempPosition].getJID();
+	}
+	if(p[tempPosition].getRBT() == 0){
+		p[tempPosition].setTerminationTime(computationTime);
+		p[tempPosition].calcTT();
+		p[tempPosition].calcWT();
 		SJFPosition++;
 	}
-}
+	
+	
 
-heapsortSJF(p,n,computationTime);
 }
 
 for(int i=0; i < n; i++){
-	
 	totalWaitTime += p[i].getWT();
 	totalTurnaroundTime += p[i].getTT();
 }
+
 compTime = computationTime;
 avgWaitTime = totalWaitTime/n;
 avgTurnaroundTime = totalTurnaroundTime/n;
 overallThroughput = n/compTime;
 processOrder.resize(processOrder.size()-2);
 
-cout << "SJF" << endl << endl;
+cout << "SRTF" << endl << endl;
 cout << "avg wait time: \t\t" << avgWaitTime << endl;
 cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
 cout << "overall Throughput: \t" << overallThroughput << endl;
