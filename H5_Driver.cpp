@@ -265,6 +265,7 @@ double totalTurnaroundTime = 0;
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
+int tempPosition = 0;
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
 
@@ -273,6 +274,10 @@ Process SJFOrder[n];
 heapsortSJF(p,n,computationTime);
 while(SJFPosition < n){
 	while(p[n-1].getRBT() !=0){
+		if(tempPosition != p[n-1].getJID()){
+		processOrder += to_string(p[n-1].getJID()) + ", ";
+		tempPosition = p[n-1].getJID();
+		}
 		computationTime++;
 		p[n-1].modRBT(1);
 		if(p[n-1].getRBT() == 0){
@@ -284,7 +289,6 @@ while(SJFPosition < n){
 		heapsortSJF(p,n,computationTime);
 		
 }
-processOrder += to_string(p[n-1].getJID()) + ", ";
 SJFPosition =0;
 for(int i=0; i <n; i++){
 	if(p[i].getRBT() == 0){
