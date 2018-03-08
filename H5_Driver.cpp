@@ -31,16 +31,22 @@ int processCount=0;
 
 welcomeMessage();
 
+
 getline(cin, readFile);
+
 
 ifstream jobFile;
 jobFile.open(readFile);
+
+if(!jobFile.is_open()){
+	cout << "Error opening file. Check input and filename/extension. Aborting program.  ";
+	abort();
+}
 
 while(getline(jobFile, line))
 	processCount++;
 
 jobFile.close();
-
 Process p[processCount];
 
 ifstream inFile;
@@ -69,6 +75,7 @@ cout << "**************************************" << endl;
 SJF(p,processCount);
 cout << "++++++++++++++++++++++++++++++++++++++" << endl;
 SRTF(p, processCount);
+
 
 return 0;
 }
