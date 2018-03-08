@@ -113,8 +113,8 @@ for(int i = n-1; i>=0; i--){
 void roundRobin(Process p[], int  n)
 {
 int roundRobinPosition = 0;
-int totalWaitTime = 0;
-int totalTurnaroundTime = 0;
+double totalWaitTime = 0;
+double totalTurnaroundTime = 0;
 string processOrder = "Process Order: ";
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
@@ -209,8 +209,8 @@ string processOrder = "process order: ";
 double compTime = 0;
 int computationTime = 0;
 int SJFPosition = 0;
-int totalWaitTime = 0;
-int totalTurnaroundTime = 0;
+double totalWaitTime = 0;
+double totalTurnaroundTime = 0;
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
@@ -260,8 +260,8 @@ string processOrder = "process order: ";
 double compTime = 0;
 int computationTime = 0;
 int SJFPosition = 0;
-int totalWaitTime = 0;
-int totalTurnaroundTime = 0;
+double totalWaitTime = 0;
+double totalTurnaroundTime = 0;
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
