@@ -7,10 +7,11 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <queue>
+
 
 using namespace std;
 
+// function prototypes
 void welcomeMessage();
 void heapifyATJID(Process p[], int n, int i);
 void heapsortATJID(Process p[], int n);
@@ -22,6 +23,8 @@ void SRTF(Process p[], int n);
 
 int main()
 {
+
+// main variables
 string line;
 string jobID;
 string burstTime;
@@ -31,27 +34,35 @@ int processCount=0;
 
 welcomeMessage();
 
-
+// receive filename from user to run against algorithms
 getline(cin, readFile);
 
-
+// create ifstream object and open input stream with respective file
 ifstream jobFile;
 jobFile.open(readFile);
 
+// check if ifstream has been established. If not display error and abort program
 if(!jobFile.is_open()){
 	cout << "Error opening file. Check input and filename/extension. Aborting program.  ";
 	abort();
 }
 
+// run while loop to determine number of processes in file
 while(getline(jobFile, line))
 	processCount++;
 
+// close ifstream
 jobFile.close();
+
+// create an array of Process objects with size of lines in [file.txt]
 Process p[processCount];
 
+// create new ifstream with the same file as above
 ifstream inFile;
 inFile.open(readFile);
 
+// parse information from file into respective variables, create Process object and add
+// to Process array p[] for each line in file
 int fileCount = 0;
 while (getline(inFile, line)){
 	fileCount++;
@@ -67,7 +78,7 @@ while (getline(inFile, line)){
 	p[fileCount -1] = add;
 
 }
-
+// don't forget to close the ifstream!
 inFile.close();
 
 roundRobin(p, processCount);
@@ -80,11 +91,13 @@ SRTF(p, processCount);
 return 0;
 }
 
+
 void welcomeMessage()
 {
 cout << "please enter name process file " << endl;
 }
 
+// heapify with priorities: Arrival Time, Job ID (utilized by round robin)
 void heapifyATJID(Process p[], int n, int i)
 {
 int largest = i;
@@ -108,6 +121,7 @@ if(largest != i){
 }
 }
 
+// heapsort for priorites: Arrival Time, Job ID (utilized by round robin)
 void heapsortATJID(Process p[], int n)
 {
 
@@ -122,6 +136,9 @@ for(int i = n-1; i>=0; i--){
 }	
 }
 
+// Algorithm for Round Robin
+// Computes: Avg wait time, avg turn around time, oberall throughput, and displays process 
+// execution order
 void roundRobin(Process p[], int  n)
 {
 
@@ -136,9 +153,12 @@ double computationTime = 0;
 Process roundRobinOrder[n];
 heapsortATJID(p, n);
 
+// reset remaining burst time equal to burst time
 for(int i = 0; i < n; i++)
 	p[i].resetRBT();
 
+// roundRobinPosition increased by one when RBT == 0.
+// loop will break when all objects in array have an RBT == 0
 while(roundRobinPosition < n){
 
 	for(int i = 0; i < n; i++){
@@ -158,16 +178,19 @@ while(roundRobinPosition < n){
 	}
 }
 
+// add for totals
 for(int i = 0; i < n; i++){
 	totalWaitTime += roundRobinOrder[i].getWT();
 	totalTurnaroundTime += roundRobinOrder[i].getTT();
 }
 
+// calculate averages
 avgWaitTime = totalWaitTime/n;
 avgTurnaroundTime = totalTurnaroundTime/n;
 overallThroughput = n/computationTime;
+// get rid of that pesky comma at the end of the list of processes
 processOrder.resize(processOrder.size()-2);
-
+// display results
 cout << "ROUND ROBIN" << endl << endl;
 cout << "avg wait time: \t\t" << avgWaitTime << endl;
 cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
@@ -176,6 +199,7 @@ cout << "computation Time: \t" << computationTime << endl;
 cout << processOrder << endl;
 }
 
+// heapify based on priorites in SJF. SO MANY CONDITIONS!!!!!
 void heapifySJF(Process p[], int n, int i, int computationTime)
 {
 
@@ -205,6 +229,7 @@ if(largest !=i){
 
 }
 }
+// heapsort based on priorites for SJF
 void heapsortSJF(Process p[], int n, int computationTime)
 {
 for(int i =n/2 - 1; i >=0; i--)
@@ -217,7 +242,7 @@ for(int i = n-1; i>=0; i--){
 }
 }
 
-
+// SJF Algorithm
 void SJF(Process p[], int n)
 {
 
@@ -231,12 +256,17 @@ double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
 
+// reset RBT equal to BT
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
 
 Process SJFOrder[n];
+// initial sort
 heapsortSJF(p,n,computationTime);
 
+// nested while loop. determines shortest job and executes
+// process until objects RBT is zero, then resorts and executes
+// until all objects in array have a RBT of zero.
 while(SJFPosition < n){
 	while(p[n-1].getRBT() !=0){
 		if(p[n-1].getAT() > computationTime)
@@ -255,18 +285,21 @@ while(SJFPosition < n){
 	heapsortSJF(p,n,computationTime);
 }
 
+// calculate totals
 for(int i=0; i < n; i++){
-	
 	totalWaitTime += p[i].getWT();
 	totalTurnaroundTime += p[i].getTT();
 }
 
+// calculate averages
 compTime = computationTime;
 avgWaitTime = totalWaitTime/n;
 avgTurnaroundTime = totalTurnaroundTime/n;
 overallThroughput = n/compTime;
+// get RID of that last coma!
 processOrder.resize(processOrder.size()-2);
 
+//D display results
 cout << "SJF" << endl << endl;
 cout << "avg wait time: \t\t" << avgWaitTime << endl;
 cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
@@ -275,6 +308,7 @@ cout << "computation Time: \t" << computationTime << endl;
 cout << processOrder << endl;
 }
 
+// SRTF algorithm
 void SRTF(Process p[], int n)
 {
 
@@ -289,15 +323,18 @@ double avgTurnaroundTime = 0;
 double overallThroughput = 0;
 int tempPosition =n-1 ;
 int check = 0;
+// reset RBT equal to BT
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
 
 Process SJFOrder[n];
-
+// initial sort
 heapsortSJF(p,n,computationTime);
-
+// while loop executes until all objects have a RBT equal to zero
+// checks object priority after each time quantum
 while(SJFPosition < n){
 	
+	// determins next object to use based on SRTF criteria
 	for(int i = 0; i < n; i ++)
 	{
 		if(p[i].getRBT() > 0 && p[i].getAT() <= computationTime){
@@ -305,7 +342,7 @@ while(SJFPosition < n){
 				tempPosition = i;
 		}
 	}
-	
+	// determins next object to use based on SRTF criteria for equal values
 	for(int i = 0; i < n; i ++)
 	{
 		if(p[i].getRBT() > 0 && p[i].getAT() <= computationTime){
@@ -315,10 +352,12 @@ while(SJFPosition < n){
 	}
 	p[tempPosition].modRBT(1);
 	computationTime++;
+	// add to process order 
 	if(check != p[tempPosition].getJID()){
 		processOrder += to_string(p[tempPosition].getJID()) + ", ";
 		check = p[tempPosition].getJID();
 	}
+	// calculations after a object newly has RBT equal to zero
 	if(p[tempPosition].getRBT() == 0){
 		p[tempPosition].setTerminationTime(computationTime);
 		p[tempPosition].calcTT();
@@ -330,17 +369,21 @@ while(SJFPosition < n){
 
 }
 
+// calculate totals
 for(int i=0; i < n; i++){
 	totalWaitTime += p[i].getWT();
 	totalTurnaroundTime += p[i].getTT();
 }
 
+// calculate averages
 compTime = computationTime;
 avgWaitTime = totalWaitTime/n;
 avgTurnaroundTime = totalTurnaroundTime/n;
 overallThroughput = n/compTime;
+// oh, those end commas need a while line of code to get rid of!
 processOrder.resize(processOrder.size()-2);
 
+// display results
 cout << "SRTF" << endl << endl;
 cout << "avg wait time: \t\t" << avgWaitTime << endl;
 cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
