@@ -157,7 +157,7 @@ double computationTime = 0;
 Process roundRobinOrder[n];
 heapsortATJID(p, n);
 int processOrderCount = 0;
-
+int JID =-1;
 // reset remaining burst time equal to burst time
 for(int i = 0; i < n; i++)
 	p[i].resetRBT();
@@ -181,8 +181,11 @@ while(roundRobinPosition < n){
 		if(p[i].getRBT() !=0 && p[i].getAT() <= computationTime){
 			computationTime++;
 			p[i].modRBT(1);
+			if(p[i].getJID() != JID){
 			processOrder += to_string(p[i].getJID()) + ", ";
 			processOrderCount++;
+			JID = p[i].getJID();
+			}
 			if(processOrderCount % 29 == 0)	
 				processOrder += "\n\t       ";
 			if(p[i].getRBT() == 0){

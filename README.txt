@@ -10,8 +10,8 @@ be displayed and program aborted.
 
 Understanding Program: Program will simulate three Process Scheduling algorithms, Shortest Job
 First (SJF), Round Robin, and Shortest Remaining Time First(SRTF). For all algorithms display will
-include: Average Turnaround Time, Overall Throughput of system, Average Waiting Time, as well as
-the order of process execution for the respective algorithm.
+include: Average Turnaround Time, Overall Throughput, Average Waiting Time, as well as
+the order of process execution for their respective algorithm.
 
 Run Program Instructions:
 
@@ -19,7 +19,7 @@ Run Program Instructions:
 		-Process.cpp
 		-Process.h
 		-HW_Driver.cpp
-		-[file.txt] (text file of any name formatted to HW5 specifications)
+		-[file.txt] (text file of any name formatted to HW5 specifications)*
 	*multiple [file.txt] filest may be included in directory
 
 	step 1)
@@ -34,5 +34,7 @@ Run Program Instructions:
 		When prompted, enter the respective .txt file you wish to run against
 		the simulations
 
+
+* included in CWD is "jobs.txt" a formatted text file which may be run against program
 ********************************************************************************************************
 
