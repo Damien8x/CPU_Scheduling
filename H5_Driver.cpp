@@ -21,6 +21,7 @@ void heapifySJF(Process p[], int n, int i, int computationTime);
 void heapsortSJF(Process p[], int n, int computationTime);
 void SRTF(Process p[], int n);
 
+string BLOCK = "-------------------------------------------------------------------------------------------------------------------------";
 int main()
 {
 
@@ -81,10 +82,8 @@ while (getline(inFile, line)){
 // don't forget to close the ifstream!
 inFile.close();
 
-roundRobin(p, processCount);
-cout << "**************************************" << endl;
 SJF(p,processCount);
-cout << "++++++++++++++++++++++++++++++++++++++" << endl;
+roundRobin(p, processCount);
 SRTF(p, processCount);
 
 
@@ -94,7 +93,12 @@ return 0;
 
 void welcomeMessage()
 {
-cout << "please enter name process file " << endl;
+cout << BLOCK << endl;
+cout << "\t\t\t\t*Welcome to the CPU Scheduling Simulator*" << endl << endl << endl;
+cout << " Simulator will show results for three scheduling algorithms:" << endl;
+cout << " Shorteset Job First, Round Robin and Shortest Remaining Time First"  << endl << endl;
+cout << " For more information please refer to README.txt" << endl;
+cout << " To begin, please enter the file-name of the formatted text file in the CWD, followed by enter.\n\n" << endl;
 }
 
 // heapify with priorities: Arrival Time, Job ID (utilized by round robin)
@@ -145,13 +149,14 @@ void roundRobin(Process p[], int  n)
 int roundRobinPosition = 0;
 double totalWaitTime = 0;
 double totalTurnaroundTime = 0;
-string processOrder = "Process Order: ";
+string processOrder = " Process Order: ";
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
 double computationTime = 0;
 Process roundRobinOrder[n];
 heapsortATJID(p, n);
+int processOrderCount = 0;
 
 // reset remaining burst time equal to burst time
 for(int i = 0; i < n; i++)
@@ -160,13 +165,26 @@ for(int i = 0; i < n; i++)
 // roundRobinPosition increased by one when RBT == 0.
 // loop will break when all objects in array have an RBT == 0
 while(roundRobinPosition < n){
+	
+	bool AT = false;
 
+	for(int i = 0; i < n; i++)
+	{
+		if(p[i].getAT() <= computationTime && p[i].getRBT() > 0)
+			AT = true;		
+	}
+	if(AT == false)
+		computationTime++;
+	else{
 	for(int i = 0; i < n; i++){
-		if(p[i].getRBT() !=0){
+	
+		if(p[i].getRBT() !=0 && p[i].getAT() <= computationTime){
 			computationTime++;
 			p[i].modRBT(1);
 			processOrder += to_string(p[i].getJID()) + ", ";
-		
+			processOrderCount++;
+			if(processOrderCount % 29 == 0)	
+				processOrder += "\n\t       ";
 			if(p[i].getRBT() == 0){
 				p[i].setTerminationTime(computationTime);
 				p[i].calcTT();
@@ -175,6 +193,7 @@ while(roundRobinPosition < n){
 				roundRobinPosition++;
 			}
 		}
+	}	
 	}
 }
 
@@ -191,12 +210,13 @@ overallThroughput = n/computationTime;
 // get rid of that pesky comma at the end of the list of processes
 processOrder.resize(processOrder.size()-2);
 // display results
-cout << "ROUND ROBIN" << endl << endl;
-cout << "avg wait time: \t\t" << avgWaitTime << endl;
-cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
-cout << "overall Throughput: \t" << overallThroughput << endl;
-cout << "computation Time: \t" << computationTime << endl;
+cout << BLOCK << endl;
+cout << "\t\t\t\t\t\t*ROUND ROBIN*" << endl << endl;
+cout << " Avg Wait Time: \t" << avgWaitTime << endl;
+cout << " Avg Turnaround Time: \t" << avgTurnaroundTime << endl;
+cout << " Overall Throughput: \t" << overallThroughput << endl;
 cout << processOrder << endl;
+cout << "\n" << BLOCK << endl;
 }
 
 // heapify based on priorites in SJF. SO MANY CONDITIONS!!!!!
@@ -246,7 +266,7 @@ for(int i = n-1; i>=0; i--){
 void SJF(Process p[], int n)
 {
 
-string processOrder = "process order: ";
+string processOrder = " Process Order: ";
 double compTime = 0;
 int computationTime = 0;
 int SJFPosition = 0;
@@ -255,6 +275,7 @@ double totalTurnaroundTime = 0;
 double avgWaitTime = 0;
 double avgTurnaroundTime = 0;
 double overallThroughput = 0;
+int processOrderCount = 0;
 
 // reset RBT equal to BT
 for(int i = 0; i<n; i++)
@@ -277,6 +298,9 @@ while(SJFPosition < n){
 		}
 	}
 	processOrder += to_string(p[n-1].getJID()) + ", ";
+	processOrderCount++;
+	if(processOrderCount % 29 == 0)
+		processOrder += "\n\t       ";
 	p[n-1].setTerminationTime(computationTime);
 	p[n-1].calcTT();
 	p[n-1].calcWT();
@@ -300,19 +324,20 @@ overallThroughput = n/compTime;
 processOrder.resize(processOrder.size()-2);
 
 //D display results
-cout << "SJF" << endl << endl;
-cout << "avg wait time: \t\t" << avgWaitTime << endl;
-cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
-cout << "overall Throughput: \t" << overallThroughput << endl;
-cout << "computation Time: \t" << computationTime << endl;
+cout << BLOCK << endl;
+cout << "      \t\t\t\t\t     *Shortest Job First*" << endl << endl;
+cout << " Avg Wait Time: \t" << avgWaitTime << endl;
+cout << " Avg Turnaround Time: \t" << avgTurnaroundTime << endl;
+cout << " Overall Throughput: \t" << overallThroughput << endl;
 cout << processOrder << endl;
+cout << "\n" << BLOCK << endl;
 }
 
 // SRTF algorithm
 void SRTF(Process p[], int n)
 {
 
-string processOrder = "process order: ";
+string processOrder = " Process Order: ";
 double compTime = 0;
 int computationTime = 0;
 int SJFPosition = 0;
@@ -323,6 +348,8 @@ double avgTurnaroundTime = 0;
 double overallThroughput = 0;
 int tempPosition =n-1 ;
 int check = 0;
+int processOrderCount = 0;
+
 // reset RBT equal to BT
 for(int i = 0; i<n; i++)
 	p[i].resetRBT();
@@ -350,11 +377,17 @@ while(SJFPosition < n){
 				tempPosition = i;		
 		}
 	}
+	if(p[tempPosition].getAT() > computationTime)
+		computationTime++;
+	else{
 	p[tempPosition].modRBT(1);
 	computationTime++;
 	// add to process order 
 	if(check != p[tempPosition].getJID()){
 		processOrder += to_string(p[tempPosition].getJID()) + ", ";
+		processOrderCount++;
+		if(processOrderCount % 29 == 0)
+			processOrder += "\n\t       ";
 		check = p[tempPosition].getJID();
 	}
 	// calculations after a object newly has RBT equal to zero
@@ -364,7 +397,7 @@ while(SJFPosition < n){
 		p[tempPosition].calcWT();
 		SJFPosition++;
 	}
-	
+	}
 	
 
 }
@@ -384,12 +417,13 @@ overallThroughput = n/compTime;
 processOrder.resize(processOrder.size()-2);
 
 // display results
-cout << "SRTF" << endl << endl;
-cout << "avg wait time: \t\t" << avgWaitTime << endl;
-cout << "avg turnaround time: \t" << avgTurnaroundTime << endl;
-cout << "overall Throughput: \t" << overallThroughput << endl;
-cout << "computation Time: \t" << computationTime << endl;
+cout << BLOCK << endl;
+cout << "\t\t\t\t\t*Shortest Remaining Time First*" << endl << endl;
+cout << " Avg Wait Time: \t" << avgWaitTime << endl;
+cout << " Avg Turnaround Time: \t" << avgTurnaroundTime << endl;
+cout << " Overall Throughput: \t" << overallThroughput << endl;
 cout << processOrder << endl;
+cout << "\n" << BLOCK << endl;
 }
 
 
