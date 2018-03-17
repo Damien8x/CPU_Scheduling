@@ -7,7 +7,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-
+#include <queue>
 
 using namespace std;
 
@@ -157,17 +157,22 @@ double computationTime = 0;
 Process roundRobinOrder[n];
 heapsortATJID(p, n);
 int processOrderCount = 0;
-int JID =-1;
+Process temp[n];
+queue<Process> Q1;
+queue<Process> Q2;
+bool Q1A = true;
+bool Q2A = false;
 // reset remaining burst time equal to burst time
-for(int i = 0; i < n; i++)
+for(int i = 0; i < n; i++){
 	p[i].resetRBT();
+	temp[i] = p[i];
+
+}
 
 // roundRobinPosition increased by one when RBT == 0.
 // loop will break when all objects in array have an RBT == 0
 while(roundRobinPosition < n){
-	
 	bool AT = false;
-
 	for(int i = 0; i < n; i++)
 	{
 		if(p[i].getAT() <= computationTime && p[i].getRBT() > 0)
@@ -177,36 +182,83 @@ while(roundRobinPosition < n){
 		computationTime++;
 	else{
 	for(int i = 0; i < n; i++){
+		if(p[i].getRBT() !=0 && p[i].getAT() <= computationTime)
+			Q1.push(p[i]);			
+	}
+		while(!Q1.empty() || !Q2.empty()){
+			if(Q1A){
+				if(Q1.empty()){
+					Q1A = false;
+					Q2A = true;
+				}else{
+					Process current = Q1.front();
+					Q1.pop();
+					computationTime++;
+				 	for(int i = 0; i < n; i++){
+						if(computationTime == p[i].getAT())
+							Q2.push(p[i]);
+					}
+					
+					current.modRBT(1);
+					processOrder += to_string(current.getJID()) + ", ";
+					processOrderCount++;
+						if(processOrderCount %29 == 0)
+							processOrder += "\n\t	";
+					if(current.getRBT() == 0){
+						current.setTerminationTime(computationTime);
+						current.calcTT();
+						current.calcWT();
+						p[roundRobinPosition] = current;
+						roundRobinPosition++;
+			
+					}else{
+						Q2.push(current);
+					}	
+				}	
+			}
+			if(Q2A){
+			if(Q2.empty()){
+					Q2A = false;
+					Q1A = true;
+				}else{
+					Process current = Q2.front();
+					Q2.pop();
+					computationTime++;
+				 	for(int i = 0; i < n; i++){
+						if(computationTime == p[i].getAT())
+							Q1.push(p[i]);
+					}
+					
+					current.modRBT(1);
+					processOrder += to_string(current.getJID()) + ", ";
+					processOrderCount++;
+						if(processOrderCount %29 == 0)
+							processOrder += "\n\t	";
+					if(current.getRBT() == 0){
+						current.setTerminationTime(computationTime);
+						current.calcTT();
+						current.calcWT();
+						p[roundRobinPosition] = current;
+						roundRobinPosition++;
+			
+					}else{
+						Q1.push(current);
+					}	
+				}
+			}
+		
+		
+		}	
 	
-		if(p[i].getRBT() !=0 && p[i].getAT() <= computationTime){
-			computationTime++;
-			p[i].modRBT(1);
-			if(p[i].getJID() != JID){
-			processOrder += to_string(p[i].getJID()) + ", ";
-			processOrderCount++;
-			JID = p[i].getJID();
-			}
-			if(processOrderCount % 29 == 0)	
-				processOrder += "\n\t       ";
-			if(p[i].getRBT() == 0){
-				p[i].setTerminationTime(computationTime);
-				p[i].calcTT();
-				p[i].calcWT();
-				roundRobinOrder[roundRobinPosition] = p[i];
-				roundRobinPosition++;
-			}
-		}
-	}	
 	}
 }
-
 // add for totals
 for(int i = 0; i < n; i++){
-	totalWaitTime += roundRobinOrder[i].getWT();
-	totalTurnaroundTime += roundRobinOrder[i].getTT();
+	totalWaitTime += p[i].getWT();
+	totalTurnaroundTime += p[i].getTT();
 }
 
-// calculate averages
+// calculate average
 avgWaitTime = totalWaitTime/n;
 avgTurnaroundTime = totalTurnaroundTime/n;
 overallThroughput = n/computationTime;
